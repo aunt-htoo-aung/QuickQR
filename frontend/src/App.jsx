@@ -1,9 +1,11 @@
 import "./App.css";
-
+import Navbar from "./components/navbar.jsx";
+import Content from "./components/content.jsx";
 function App() {
   return (
     <>
-      <h1 className="text-3xl text-blue-300">Quick QR</h1>
+      <Navbar />
+      <Content />
     </>
   );
 }
