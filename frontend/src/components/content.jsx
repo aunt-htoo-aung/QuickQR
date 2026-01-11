@@ -4,23 +4,39 @@ export default function Content() {
   const [src, setSrc] = useState(
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATNSURBVO3BQY4bSRAEwfAC//9l3znmqYBGJ0crIczwR6qWnFQtOqladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYs+eQnIb1IzAblRMwF5Q80NkEnNG0B+k5o3TqoWnVQtOqla9MkyNZuA/ElqnlBzA2RS84SaTUA2nVQtOqladFK16JMvA/KEmjfU3Ki5ATIBuVFzA+SbgDyh5ptOqhadVC06qVr0yV9OzQRkUnMD5A0gN2pugExq/mYnVYtOqhadVC365C8HZFIzAblRMwG5UTMBuQFyo+ZfclK16KRq0UnVok++TM03qZmATGomIH+Smk1q/k9OqhadVC06qVr0yTIgvwnIpGYCMqmZgExqJiBPqJmA3ACZ1NwA+T87qVp0UrXopGoR/sg/BMikZgIyqZmAPKHmCSCTmn/JSdWik6pFJ1WLPnkJyKTmBsg3qZmATGqeUDMBmYBsAjKpuQEyqZmAPKHmjZOqRSdVi06qFuGPLAIyqfkmIH+SmhsgN2qeAHKjZgIyqfmmk6pFJ1WLTqoW4Y/8QUAmNROQGzUTkEnNBOQJNROQN9RMQCY1E5BJzQTkRs1vOqladFK16KRq0ScvAZnUbFIzAblRc6PmBsiNmgnIG2pu1ExAJjUTkBsgN2reOKladFK16KRq0ScvqZmA3Kh5Asik5gbINwG5UXMD5EbNBOSb1Gw6qVp0UrXopGoR/sgLQCY13wTkRs0TQDapeQLIpGYC8oaaGyCTmjdOqhadVC06qVr0yTIgk5obIE+omYBMQCY1N2omIJOaCcgbQCY1T6h5Asik5ptOqhadVC06qVr0yZcBmdQ8oWYC8gSQSc2NmifU3AC5AXKj5gbIpOYGyDedVC06qVp0UrUIf+QFIG+ouQEyqZmA3KiZgExqboBMar4JyKTmb3JSteikatFJ1aJPfpmaCciNmgnIE0AmNROQJ4BMam6APKHmCSCTmhsgk5pNJ1WLTqoWnVQt+uSXAblRMwH5TWpugExAJjWTmgnIpGYC8oSaCciNmgnIpOaNk6pFJ1WLTqoWffJlam6A3KiZgExqJiCTmgnIpOYGyG9S8wSQSc0EZAIyqdl0UrXopGrRSdUi/JEXgPxJaiYgN2pugNyomYD8n6i5AXKj5o2TqkUnVYtOqhbhj/zFgExqJiA3am6A3Ki5AfKEmieATGomIE+oeeOkatFJ1aKTqkWfvATkN6l5Qs0EZAIyqXkCyDcBmdTcALlR800nVYtOqhadVC36ZJmaTUCeADKpmdRMQJ5QMwH5JjVvqPlNJ1WLTqoWnVQt+uTLgDyhZhOQGzUTkBsgN2pugNwAeUPNBGRSMwGZ1LxxUrXopGrRSdWiT/4xaiYgk5oJyI2aCcgbam6ATGqeAPInnVQtOqladFK16JO/nJongExqJiATkBs1E5AbNROQSc0NkDeAfNNJ1aKTqkUnVYs++TI1f5KaGyCTmhsgE5BJzRNqnlAzAZnUTEAmNROQTSdVi06qFp1ULfpkGZDfBOQNNTdAbtQ8AeRGzQ2QJ9TcqNl0UrXopGrRSdUi/JGqJSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYtOqhadVC06qVp0UrXopGrRSdWi/wC3PyxGAEkl/AAAAABJRU5ErkJggg=="
   );
-  console.log(src);
+
+  const [options, setOptions] = useState({
+    width: 200,
+    errorCorrectionLevel: "L",
+    margin: 4,
+    type: "image/png",
+  });
+  // console.log(src);
   return (
     <div className="p-5 flex gap-10 flex-wrap">
       <div className="w-full sm:flex-1">
-        <InputContainer setSrc={setSrc} />
+        <InputContainer
+          setSrc={setSrc}
+          options={options}
+          setOptions={setOptions}
+        />
       </div>
       <div className="w-full sm:flex-1">
-        <OutputContainer src={src} />
+        <OutputContainer src={src} type={options.type} />
       </div>
     </div>
   );
 }
 
-const InputContainer = ({ setSrc }) => {
+const InputContainer = ({ setSrc, options, setOptions }) => {
   const generateQRCode = async () => {
     const textarea = document.getElementById("input");
-    setSrc(await dataFetcher(textarea.value));
+    const data = {
+      text: textarea.value,
+      option: { ...options },
+    };
+    console.log(data);
+    setSrc(await dataFetcher(data));
   };
   return (
     <div className="shadow p-4 rounded-md w-full">
@@ -30,26 +46,28 @@ const InputContainer = ({ setSrc }) => {
         className="w-full border p-2 border-gray-400 rounded-md h-50"
       ></textarea>
       <Button name="Generate QR Code" onClick={generateQRCode} />
-      <AdvancedOptions />
+      <AdvancedOptions options={options} setOptions={setOptions} />
     </div>
   );
 };
 
-const OutputContainer = ({ src }) => {
+const OutputContainer = ({ src, type }) => {
   return (
     <div className="shadow p-4 rounded-md w-full">
       <img src={src} alt="" className="justify-self-center mb-2" />
-      <Button name="Download" onClick={() => downloadHandler(src)} />
+      <Button name="Download" onClick={() => downloadHandler(src, type)} />
     </div>
   );
 };
 
-const AdvancedOptions = () => {
-  const options = (
+const AdvancedOptions = ({ options, setOptions }) => {
+  const optionSelects = (
     <div className="flex flex-col gap-5 mt-4">
       <div className="flex items-center justify-between">
         <label htmlFor="size">Size : </label>
         <select
+          value={options.width}
+          onChange={(e) => setOptions({ ...options, width: e.target.value })}
           name="size"
           id="size"
           className="border rounded-md px-3 py-1.5 min-w-[120px] cursor-pointer"
@@ -62,6 +80,10 @@ const AdvancedOptions = () => {
       <div className="flex items-center justify-between">
         <label htmlFor="erlevl">Error Correcption Level : </label>
         <select
+          value={options.errorCorrectionLevel}
+          onChange={(e) =>
+            setOptions({ ...options, errorCorrectionLevel: e.target.value })
+          }
           name="erlevl"
           id="erlevl"
           className="border rounded-md px-3 py-1.5 min-w-[120px] cursor-pointer"
@@ -75,6 +97,8 @@ const AdvancedOptions = () => {
       <div className="flex items-center justify-between">
         <label htmlFor="margin">Margin : </label>
         <select
+          value={options.margin}
+          onChange={(e) => setOptions({ ...options, margin: e.target.value })}
           name="margin"
           id="margin"
           className="border rounded-md px-3 py-1.5 min-w-[120px] cursor-pointer"
@@ -89,13 +113,15 @@ const AdvancedOptions = () => {
       <div className="flex items-center justify-between">
         <label htmlFor="type">Type : </label>
         <select
+          value={options.type}
+          onChange={(e) => setOptions({ ...options, type: e.target.value })}
           name="type"
           id="type"
           className="border rounded-md px-3 py-1.5 min-w-[120px] cursor-pointer"
         >
-          <option value="png">PNG</option>
-          <option value="jpeg">JPEG</option>
-          <option value="webp">WEBP</option>
+          <option value="image/png">PNG</option>
+          <option value="image/jpeg">JPEG</option>
+          <option value="image/webp">WEBP</option>
         </select>
       </div>
     </div>
@@ -104,7 +130,7 @@ const AdvancedOptions = () => {
     <Collapsible
       title="Advanced Options"
       className="w-2/3  mt-4"
-      child={options}
+      child={optionSelects}
     />
   );
 };
@@ -136,10 +162,10 @@ const Collapsible = ({ title, child, className }) => {
   );
 };
 
-const downloadHandler = (src) => {
+const downloadHandler = (src, type) => {
   const link = document.createElement("a");
   link.href = src;
-  link.download = "qr.jpg"; // file name
+  link.download = "qr." + type.substring(6); // file name
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
